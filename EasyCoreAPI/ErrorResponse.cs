@@ -12,7 +12,7 @@ public class ErrorResponse
 
     public ErrorResponse(string field, string errorMessage)
     {
-        field = field;
-        errorMessage = errorMessage;
+        Field = field;
+        ErrorMessage = errorMessage;
     }
 }
