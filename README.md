@@ -31,21 +31,21 @@ using EasyCoreAPI;
 
 ### Add SwaggerGen
 ```csharp
-services.AddSwaggerGen(Configuration, AuthScheme.Bearer");
+services.AddAPISwaggerGen(Configuration, AuthScheme.Bearer);
 ```
 
 ### Add API Versioning
 ```csharp
-services.AddApiVersioning(1);
+services.AddAPIVersioning(1);
 ```
 ### Add API Controllers
 ```csharp
-services.AddApiControllers();
+services.AddAPIControllers();
 ```
 
 ### Use SwaggerUI in WebApplication
 ```csharp
-app.UseSwaggerUI();
+app.UseAPISwaggerUI();
 ```
 
 

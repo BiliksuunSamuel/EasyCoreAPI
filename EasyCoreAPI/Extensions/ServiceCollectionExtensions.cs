@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
     /// <param name="configuration"></param>
     /// <param name="schemeName"></param>
     /// <returns></returns>
-    public static IServiceCollection AddSwaggerGen(
+    public static IServiceCollection AddAPISwaggerGen(
         this IServiceCollection services,
         IConfiguration configuration,
         string schemeName)
@@ -86,7 +86,7 @@ public static class ServiceCollectionExtensions
     /// Use Swagger
     /// </summary>
     /// <param name="app"></param>
-    public static void UseSwaggerUI(this WebApplication app)
+    public static void UseAPISwaggerUI(this WebApplication app)
     {
         var apiDocsConfig = app.Services.GetRequiredService<IOptions<ApiDocsConfig>>().Value;
 
@@ -143,7 +143,7 @@ public static class ServiceCollectionExtensions
     /// <param name="version"></param>
     /// <returns></returns>
 
-    public static IServiceCollection AddApiVersioning(this IServiceCollection services, int version)
+    public static IServiceCollection AddAPIVersioning(this IServiceCollection services, int version)
     {
         services.AddApiVersioning(opt =>
         {
@@ -171,7 +171,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddApiControllers(this IServiceCollection services)
+    public static IServiceCollection AddAPIControllers(this IServiceCollection services)
     {
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
