@@ -4,6 +4,19 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>1.0.0</Version>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/BiliksuunSamuel/EasyCoreAPI</RepositoryUrl>
+        <Authors>Samuel Biliksuun</Authors>
+        <Company>DeveloperBhills</Company>
+        <Description>
+            The EasyCoreAPI SDK simplifies the setup of Swagger documentation, API versioning, and controller configurations in ASP.NET Core applications. It provides a seamless way to integrate modern API practices with minimal effort.
+        </Description>
+        <PackageTags>Swagger OpenApi ApiVersioning</PackageTags>
+        <PackageReleaseNotes>Version 1.0.0 - Initial Release</PackageReleaseNotes>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +27,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="6.6.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2" />
+
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 </Project>
