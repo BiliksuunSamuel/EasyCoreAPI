@@ -34,8 +34,7 @@ public static class ServiceCollectionExtensions
         services.Configure<ApiDocsConfig>(c => configuration.GetSection(nameof(ApiDocsConfig)).Bind(c));
 
         services.ConfigureOptions<ConfigureSwaggerOptions>();
-
-        var projName = Assembly.GetExecutingAssembly().GetName().Name;
+        var projName = Assembly.GetEntryAssembly()?.GetName().Name;
 
         services.AddSwaggerGen(c =>
         {
