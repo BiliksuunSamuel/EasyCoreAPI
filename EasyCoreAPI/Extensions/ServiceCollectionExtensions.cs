@@ -1,12 +1,17 @@
 using System.Reflection;
 using System.Text.Json;
 using EasyCoreAPI.Options;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerUI;
+
 // ReSharper disable All
 
 namespace EasyCoreAPI.Extensions;
@@ -75,6 +80,61 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+    
+    
+    /// <summary>
+    /// Use Swagger
+    /// </summary>
+    /// <param name="app"></param>
+    public static void UseSwagger(this WebApplication app)
+    {
+        var apiDocsConfig = app.Services.GetRequiredService<IOptions<ApiDocsConfig>>().Value;
+
+        var apiVersionDescription = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        if (apiDocsConfig.ShowSwaggerUi)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                var projName = Assembly.GetExecutingAssembly().GetName().Name;
+                foreach (var description in apiVersionDescription.ApiVersionDescriptions.Reverse())
+                {
+                    c.SwaggerEndpoint(
+                        $"/swagger/{description.GroupName}/swagger.json",
+                        $"{projName} - {description.GroupName}");
+                }
+
+                if (apiDocsConfig.EnableSwaggerTryIt)
+                {
+                    var submitMethods = new SubmitMethod[]
+                    {
+                        SubmitMethod.Post,
+                        SubmitMethod.Get,
+                        SubmitMethod.Put,
+                        SubmitMethod.Patch,
+                        SubmitMethod.Delete,
+                    };
+
+                    c.SupportedSubmitMethods(submitMethods);
+                }
+            });
+        }
+
+        if (apiDocsConfig.ShowRedocUi)
+        {
+            foreach (var description in apiVersionDescription.ApiVersionDescriptions.Reverse())
+            {
+                app.UseReDoc(options =>
+                {
+                    options.DocumentTitle = Assembly.GetExecutingAssembly().GetName().Name;
+                    options.RoutePrefix = $"api-docs-{description.GroupName}";
+                    options.SpecUrl = $"/swagger/{description.GroupName}/swagger.json";
+                });
+            }
+        }
+    }
+
 
     /// <summary>
     /// Add Api Versioning
