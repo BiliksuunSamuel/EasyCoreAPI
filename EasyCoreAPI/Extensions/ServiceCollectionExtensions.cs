@@ -86,7 +86,7 @@ public static class ServiceCollectionExtensions
     /// Use Swagger
     /// </summary>
     /// <param name="app"></param>
-    public static void UseSwagger(this WebApplication app)
+    public static void UseSwaggerUI(this WebApplication app)
     {
         var apiDocsConfig = app.Services.GetRequiredService<IOptions<ApiDocsConfig>>().Value;
 
