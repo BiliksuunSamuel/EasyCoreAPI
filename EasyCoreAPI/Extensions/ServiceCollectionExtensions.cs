@@ -1,6 +1,147 @@
+using System.Reflection;
+using System.Text.Json;
+using EasyCoreAPI.Options;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+// ReSharper disable All
+
 namespace EasyCoreAPI.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    
+
+    /// <summary>
+    /// Add Swagger Gen
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <param name="schemeName"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddSwaggerGen(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string schemeName)
+    {
+        services.Configure<ApiDocsConfig>(c => configuration.GetSection(nameof(ApiDocsConfig)).Bind(c));
+
+        services.ConfigureOptions<ConfigureSwaggerOptions>();
+
+        var projName = Assembly.GetExecutingAssembly().GetName().Name;
+
+        services.AddSwaggerGen(c =>
+        {
+            c.EnableAnnotations();
+
+            c.AddSecurityDefinition(schemeName, new()
+            {
+                Description = $@"Enter '[schemeName]' [space] and then your token in the text input below.<br/>
+                      Example: '{schemeName} 12345abcdef'",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = schemeName
+            });
+
+            c.AddSecurityRequirement(new()
+            {
+                {
+                    new()
+                    {
+                        Reference = new()
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = schemeName
+                        },
+                        Scheme = "oauth2",
+                        Name = schemeName,
+                        In = ParameterLocation.Header,
+                    },
+                    Array.Empty<string>()
+                }
+            });
+
+            c.DocumentFilter<AdditionalParametersDocumentFilter>();
+
+            c.ResolveConflictingActions(descriptions => { return descriptions.First(); });
+
+            var xmlFile = $"{projName}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Add Api Versioning
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="version"></param>
+    /// <returns></returns>
+
+    public static IServiceCollection AddApiVersioning(this IServiceCollection services, int version)
+    {
+        services.AddApiVersioning(opt =>
+        {
+            opt.DefaultApiVersion = new ApiVersion(version, 0);
+            opt.AssumeDefaultVersionWhenUnspecified = true;
+            opt.ReportApiVersions = true;
+            opt.ApiVersionReader = ApiVersionReader.Combine(
+                new UrlSegmentApiVersionReader(),
+                new HeaderApiVersionReader("x-api-version"),
+                new MediaTypeApiVersionReader("x-api-version"));
+        });
+
+        services.AddVersionedApiExplorer(setup =>
+        {
+            setup.GroupNameFormat = "'v'VVV";
+            setup.SubstituteApiVersionInUrl = true;
+        });
+
+        return services;
+    }
+
+
+    /// <summary>
+    /// Add Api Controllers
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddApiControllers(this IServiceCollection services)
+    {
+        services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
+        services.AddControllers(options =>
+            {
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.WriteIndented = true;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = InvalidModelStateHandler;
+            });
+
+        static IActionResult InvalidModelStateHandler(ActionContext context)
+        {
+            return new BadRequestObjectResult(new ApiResponse<object>(
+                message: "Validation Errors",
+                code: 400,
+                errors: context.ModelState
+                    .Where(modelError => modelError.Value?.Errors?.Count > 0)
+                    .Select(modelError => new ErrorResponse(
+                        field: modelError.Key,
+                        errorMessage: modelError.Value?.Errors?.FirstOrDefault()?.ErrorMessage ?? "Invalid Request"))));
+        }
+
+        return services;
+    }
+
 }
