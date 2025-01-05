@@ -98,7 +98,7 @@ public static class ServiceCollectionExtensions
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                var projName = Assembly.GetExecutingAssembly().GetName().Name;
+                var projName = Assembly.GetEntryAssembly()?.GetName().Name;
                 foreach (var description in apiVersionDescription.ApiVersionDescriptions.Reverse())
                 {
                     c.SwaggerEndpoint(
