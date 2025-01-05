@@ -56,6 +56,16 @@ app.UseAPISwaggerUI();
 </PropertyGroup>
 ```
 
+### Add `ApiDocsConfig` to `appsettings.json` file
+```json
+{
+  "ApiDocsConfig": {
+    "ShowSwaggerUi": true,
+    "ShowRedocUi": false,
+    "EnableSwaggerTryIt": true
+  }
+}
+```
 
 ## Contributing
 1. Fork the repository.
