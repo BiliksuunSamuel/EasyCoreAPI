@@ -48,6 +48,14 @@ services.AddAPIControllers();
 app.UseAPISwaggerUI();
 ```
 
+### Update PropertyGroup of `.csproj` file
+```xml
+<PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+</PropertyGroup>
+```
+
 
 ## Contributing
 1. Fork the repository.

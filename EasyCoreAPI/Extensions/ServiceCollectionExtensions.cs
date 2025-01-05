@@ -76,6 +76,8 @@ public static class ServiceCollectionExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         });
+        
+        //
 
         return services;
     }
@@ -85,7 +87,7 @@ public static class ServiceCollectionExtensions
     /// Use Swagger
     /// </summary>
     /// <param name="app"></param>
-    public static void UseAPISwaggerUI(this WebApplication app)
+    public static WebApplication UseAPISwaggerUI(this WebApplication app)
     {
         var apiDocsConfig = app.Services.GetRequiredService<IOptions<ApiDocsConfig>>().Value;
 
@@ -126,12 +128,13 @@ public static class ServiceCollectionExtensions
             {
                 app.UseReDoc(options =>
                 {
-                    options.DocumentTitle = Assembly.GetExecutingAssembly().GetName().Name;
+                    options.DocumentTitle =  Assembly.GetEntryAssembly()?.GetName().Name;
                     options.RoutePrefix = $"api-docs-{description.GroupName}";
                     options.SpecUrl = $"/swagger/{description.GroupName}/swagger.json";
                 });
             }
         }
+        return app;
     }
 
 
@@ -199,6 +202,11 @@ public static class ServiceCollectionExtensions
                         field: modelError.Key,
                         errorMessage: modelError.Value?.Errors?.FirstOrDefault()?.ErrorMessage ?? "Invalid Request"))));
         }
+        
+        
+        //
+        services.AddControllers();
+        services.AddVersionedApiExplorer();
 
         return services;
     }
