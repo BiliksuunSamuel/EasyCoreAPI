@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         services.Configure<ApiDocsConfig>(c => configuration.GetSection(nameof(ApiDocsConfig)).Bind(c));
 
         services.ConfigureOptions<ConfigureSwaggerOptions>();
-        var projName = Assembly.GetEntryAssembly()?.GetName().Name;
+        var projName = Assembly.GetEntryAssembly()?.GetName().Name ?? "API Documentation";
 
         services.AddSwaggerGen(c =>
         {
@@ -74,7 +74,10 @@ public static class ServiceCollectionExtensions
 
             var xmlFile = $"{projName}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
+            if (File.Exists(xmlPath))
+            {
+                c.IncludeXmlComments(xmlPath);
+            }
         });
         
         //
@@ -92,13 +95,13 @@ public static class ServiceCollectionExtensions
         var apiDocsConfig = app.Services.GetRequiredService<IOptions<ApiDocsConfig>>().Value;
 
         var apiVersionDescription = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+        var projName = Assembly.GetEntryAssembly()?.GetName().Name ?? "API Documentation";
 
         if (apiDocsConfig.ShowSwaggerUi)
         {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                var projName = Assembly.GetEntryAssembly()?.GetName().Name;
                 foreach (var description in apiVersionDescription.ApiVersionDescriptions.Reverse())
                 {
                     c.SwaggerEndpoint(
@@ -128,7 +131,7 @@ public static class ServiceCollectionExtensions
             {
                 app.UseReDoc(options =>
                 {
-                    options.DocumentTitle =  Assembly.GetEntryAssembly()?.GetName().Name;
+                    options.DocumentTitle = projName;
                     options.RoutePrefix = $"api-docs-{description.GroupName}";
                     options.SpecUrl = $"/swagger/{description.GroupName}/swagger.json";
                 });
