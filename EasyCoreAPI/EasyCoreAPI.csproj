@@ -13,7 +13,7 @@
             The EasyCoreAPI SDK simplifies the setup of Swagger documentation, API versioning, and controller configurations in ASP.NET Core applications. It provides a seamless way to integrate modern API practices with minimal effort.
         </Description>
         <PackageTags>Swagger OpenApi ApiVersioning</PackageTags>
-        <PackageReleaseNotes>Version 1.1.14 - Initial Release</PackageReleaseNotes>
+        <PackageReleaseNotes>Version 1.1.15 - Initial Release</PackageReleaseNotes>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
